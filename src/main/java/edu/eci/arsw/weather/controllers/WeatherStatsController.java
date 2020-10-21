@@ -24,7 +24,6 @@ public class WeatherStatsController {
         Map<String,String> error= new HashMap<>();
         try{
             CityWeather data = weatherStatsService.getStatsByCity(cityName);
-            System.out.println(data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (UnirestException e){
             error.put("error", e.getMessage());

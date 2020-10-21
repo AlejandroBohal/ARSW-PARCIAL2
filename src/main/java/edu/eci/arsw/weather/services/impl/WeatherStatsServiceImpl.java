@@ -2,6 +2,7 @@ package edu.eci.arsw.weather.services.impl;
 
 import com.google.gson.Gson;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import edu.eci.arsw.weather.cache.ICacheStats;
 import edu.eci.arsw.weather.entities.*;
 import edu.eci.arsw.weather.httpconnectionservices.IHttpWeatherService;
 import edu.eci.arsw.weather.services.IWeatherStatsService;
@@ -9,22 +10,30 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class WeatherStatsServiceImpl implements IWeatherStatsService {
     @Autowired
     private IHttpWeatherService weatherService;
+    @Autowired
+    private ICacheStats cache;
+    private static final String cacheCity = "cacheCity";
     @Override
     public CityWeather getStatsByCity(String name) throws UnirestException {
-        CityWeather cityWeather = new CityWeather();
-        JSONObject object = weatherService.getWeatherByCity(name);
-        Coord coord = formatObject("coord",object,Coord.class);
-        Clouds clouds = formatObject("clouds",object,Clouds.class);
-        MainStats mainStats = formatObject("main",object,MainStats.class);
-        JSONObject objectWeather = object.getJSONArray("weather").getJSONObject(0);
-        Weather weather = mapWeather(objectWeather);
-        Wind wind = formatObject("wind",object,Wind.class);
-        setCityWeatherStats(cityWeather,wind,coord,clouds,mainStats,weather,object);
-        return cityWeather;
+        if(cache.getCache(cacheCity) == null || new Date().getTime() - cache.getDate(cacheCity) >= 30000) {
+            CityWeather cityWeather = new CityWeather();
+            JSONObject object = weatherService.getWeatherByCity(name);
+            Coord coord = formatObject("coord", object, Coord.class);
+            Clouds clouds = formatObject("clouds", object, Clouds.class);
+            MainStats mainStats = formatObject("main", object, MainStats.class);
+            JSONObject objectWeather = object.getJSONArray("weather").getJSONObject(0);
+            Weather weather = mapWeather(objectWeather);
+            Wind wind = formatObject("wind", object, Wind.class);
+            setCityWeatherStats(cityWeather, wind, coord, clouds, mainStats, weather, object);
+            cache.putCache(cacheCity,cityWeather);
+        }
+        return cache.getCache(cacheCity).getStats();
     }
 
     private Weather mapWeather(JSONObject objectWeater) {
