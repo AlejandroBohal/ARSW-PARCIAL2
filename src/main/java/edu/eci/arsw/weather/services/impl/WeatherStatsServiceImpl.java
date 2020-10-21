@@ -21,7 +21,7 @@ public class WeatherStatsServiceImpl implements IWeatherStatsService {
     private static final String cacheCity = "cacheCity";
     @Override
     public CityWeather getStatsByCity(String name) throws UnirestException {
-        if(cache.getCache(cacheCity) == null || new Date().getTime() - cache.getDate(cacheCity) >= 30000) {
+        if(cache.getCache(name) == null || new Date().getTime() - cache.getDate(name) >= 30000) {
             CityWeather cityWeather = new CityWeather();
             JSONObject object = weatherService.getWeatherByCity(name);
             Coord coord = formatObject("coord", object, Coord.class);
@@ -31,9 +31,9 @@ public class WeatherStatsServiceImpl implements IWeatherStatsService {
             Weather weather = mapWeather(objectWeather);
             Wind wind = formatObject("wind", object, Wind.class);
             setCityWeatherStats(cityWeather, wind, coord, clouds, mainStats, weather, object);
-            cache.putCache(cacheCity,cityWeather);
+            cache.putCache(name,cityWeather);
         }
-        return cache.getCache(cacheCity).getStats();
+        return cache.getCache(name).getStats();
     }
 
     private Weather mapWeather(JSONObject objectWeater) {
