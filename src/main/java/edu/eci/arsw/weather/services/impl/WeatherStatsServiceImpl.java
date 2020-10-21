@@ -22,8 +22,9 @@ public class WeatherStatsServiceImpl implements IWeatherStatsService {
         MainStats mainStats = formatObject("main",object,MainStats.class);
         JSONObject objectWeather = object.getJSONArray("weather").getJSONObject(0);
         Weather weather = mapWeather(objectWeather);
-        setCityWeatherStats(cityWeather,coord,clouds,mainStats,weather,object);
-        return null;
+        Wind wind = formatObject("wind",object,Wind.class);
+        setCityWeatherStats(cityWeather,wind,coord,clouds,mainStats,weather,object);
+        return cityWeather;
     }
 
     private Weather mapWeather(JSONObject objectWeater) {
@@ -36,16 +37,16 @@ public class WeatherStatsServiceImpl implements IWeatherStatsService {
         T formattedObject = (T) gson.fromJson(stringObject,objectClass);
         return formattedObject;
     }
-    private void setCityWeatherStats(CityWeather cityWeather, Coord coord, Clouds clouds, MainStats mainStats, Weather weather, JSONObject object) {
+    private void setCityWeatherStats(CityWeather cityWeather,Wind wind, Coord coord, Clouds clouds, MainStats mainStats, Weather weather, JSONObject object) {
         cityWeather.setCoord(coord);
         cityWeather.setWeather(weather);
+        cityWeather.setWind(wind);
         cityWeather.setMainStats(mainStats);
         cityWeather.setClouds(clouds);
         cityWeather.setName(object.getString("name"));
         cityWeather.setTimezone(object.getInt("timezone"));
         cityWeather.setCod(object.getInt("cod"));
         cityWeather.setVisibility(object.getInt("visibility"));
-
 
     }
 }
