@@ -11,8 +11,18 @@
         <link rel="stylesheet"
               href="/webjars/bootstrap/4.5.2/css/bootstrap.min.css"/>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=default%22%3E"></script>
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkea9ok6Fc6w38Jrb1X87tbul8F05BmHI&language=en"
+            type="text/javascript"></script>
+        <style>
+        #map {
+            height: 400px;
+        }
+        </style>
+
     </head>
-    <body>
+    <body onload="app.init()">
     <div class="row" style="margin-top: 50px;margin-left:3rem; margin-right: 3rem">
         <div class="container">
             <h2 class="bg-warning">
@@ -91,6 +101,8 @@
                     </table>
                 </div>
             </div>
+        </div>
+        <div id="map">
         </div>
     </body>
 </html>
